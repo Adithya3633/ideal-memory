@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Introduction to Data and Databases</title>
+
+  <!-- GitHub-like fonts and base look -->
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.15);
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --code-bg: #1b1f23;
+      --tag-bg: #21262d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: radial-gradient(circle at top, #161b22 0, #010409 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px 40px;
+    }
+
+    /* Top header bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-bar .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .top-bar .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Main header card */
+    .hero {
+      background: linear-gradient(
+          120deg,
+          rgba(88, 166, 255, 0.08),
+          transparent 50%
+        ),
+        var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 20px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-main {
+      max-width: 70%;
+    }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      text-align: right;
+      gap: 6px;
+      min-width: 150px;
+    }
+
+    .hero-badge-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .hero-badge-main {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, #238636 0, #161b22 55%);
+      border: 1px solid #2ea043;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c9ffdd;
+      box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2);
+    }
+
+    .hero-badge-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Layout: content + right mini-outline */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero {
+        flex-direction: column;
+      }
+      .hero-main {
+        max-width: 100%;
+      }
+      .hero-badge {
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+
+    /* Main content card */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    p {
+      margin: 4px 0 6px;
+      font-size: 14px;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px 18px;
+      padding-left: 0;
+      font-size: 14px;
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    strong {
+      color: #e6edf3;
+    }
+
+    .key-idea {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      font-size: 13px;
+    }
+
+    .key-idea span {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    hr {
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      margin: 10px 0;
+    }
+
+    /* Right-side outline / quick nav */
+    .side-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 80px);
+      overflow: auto;
+    }
+
+    .side-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .side-section {
+      margin-bottom: 8px;
+    }
+
+    .side-section span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .side-section ul {
+      margin: 4px 0 0 14px;
+      list-style-type: disc;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Small code-like labels */
+    .mini-label {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="title">
+        <span>📚 DBMS Notes</span>
+        <span class="pill">Unit 1 • Basics</span>
+      </div>
+      <div>GitHub‑style HTML</div>
+    </div>
+
+    <!-- Hero header -->
+    <header class="hero">
+      <div class="hero-main">
+        <h1>Introduction to Data &amp; Databases</h1>
+        <p>Concise course notes covering data, databases, DBMS, and database systems.</p>
+        <div class="hero-tags">
+          <span class="tag">Data</span>
+          <span class="tag">Database</span>
+          <span class="tag">DBMS</span>
+          <span class="tag">Data Warehouse</span>
+          <span class="tag">Real‑Time</span>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div>
+          <div class="hero-badge-label">Level</div>
+          <div class="hero-badge-main">Beginner • Semester 1</div>
+        </div>
+        <div class="hero-badge-sub">
+          <span class="mini-label">CS / IT</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Main content -->
+      <main class="card">
+        <h2 id="data">1. Data</h2>
+        <p><strong>Definition (As per this course)</strong></p>
+        <ul>
+          <li>Data is any fact that can be recorded and stored.</li>
+          <li>If something can be recorded, it is considered data.</li>
+        </ul>
+
+        <p><strong>Examples of Data</strong></p>
+        <ul>
+          <li><strong>Text</strong> – name, address, description</li>
+          <li><strong>Numbers</strong> – phone number, marks, age</li>
+          <li><strong>Images</strong> – photographs, satellite images</li>
+          <li><strong>Audio</strong> – speech, songs</li>
+          <li><strong>Video</strong> – movies, recorded lectures</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Core idea:</span> Any recordable fact is considered <strong>data</strong>.
+        </div>
+
+        <hr />
+
+        <h2 id="database">2. Database</h2>
+        <p><strong>Definition</strong></p>
+        <ul>
+          <li>A <strong>Database</strong> is a collection of related data.</li>
+          <li>Data stored must be related to a specific application or purpose.</li>
+          <li>Only relevant data is inserted, deleted, or updated.</li>
+        </ul>
+
+        <p><strong>Examples</strong></p>
+        <ul>
+          <li><strong>Student database</strong> → name, roll number, marks, address.</li>
+          <li><strong>Ticket booking database</strong> → passenger details, ticket ID.</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="types">3. Types of Databases</h2>
+
+        <h3 id="traditional">3.1 Traditional Database</h3>
+        <ul>
+          <li>Stores text and numbers only.</li>
+          <li>Examples: Student records, banking systems.</li>
+        </ul>
+
+        <h3 id="multimedia">3.2 Multimedia Database</h3>
+        <ul>
+          <li>Stores images, audio, video.</li>
+          <li>Examples:</li>
+          <ul>
+            <li>YouTube, Vimeo → video databases.</li>
+            <li>Music platforms → audio databases.</li>
+          </ul>
+        </ul>
+
+        <h3 id="gis">3.3 Geographic Information System (GIS)</h3>
+        <ul>
+          <li>Stores image‑based and spatial data.</li>
+          <li>Examples:</li>
+          <ul>
+            <li>Satellite images of Earth.</li>
+            <li>Space images/videos from NASA.</li>
+          </ul>
+        </ul>
+
+        <h3 id="realtime">3.4 Real‑Time Database</h3>
+        <ul>
+          <li>Data must be updated immediately.</li>
+          <li>Used where instant response is required.</li>
+          <li>Examples:</li>
+          <ul>
+            <li>Supermarket inventory.</li>
+            <li>Production and manufacturing systems.</li>
+          </ul>
+        </ul>
+
+        <h3 id="warehouse">3.5 Data Warehouse</h3>
+        <p><strong>Definition</strong></p>
+        <ul>
+          <li>A <strong>Data Warehouse</strong> is a database that stores:</li>
+          <ul>
+            <li>Very large volume of data.</li>
+            <li>Historical data (long‑term past data).</li>
+          </ul>
+        </ul>
+
+        <p><strong>Examples</strong></p>
+        <ul>
+          <li>Stock market data of 50–100 years.</li>
+          <li>Company sales data over decades.</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Core idea:</span> A data warehouse is used mainly for <strong>analysis and prediction</strong>, not daily transactions.
+        </div>
+
+        <hr />
+
+        <h2 id="manual-vs-computerized">4. Manual vs Computerized Databases</h2>
+
+        <h3>4.1 Manual Databases (Earlier)</h3>
+        <ul>
+          <li><strong>Database</strong> → registers/books.</li>
+          <li><strong>Manipulation</strong> → pen and paper.</li>
+        </ul>
+
+        <h3>4.2 Computerized Databases (Now)</h3>
+        <ul>
+          <li>Data stored on computers.</li>
+          <li>Stored on hard disks / storage devices.</li>
+          <li>Requires software to manage data.</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="need-db-software">5. Need for Database Software</h2>
+        <p>To manage a database, software must support:</p>
+        <ol>
+          <li>
+            <strong>Define</strong>
+            <ul>
+              <li>Data types (int, char, string, etc.).</li>
+              <li>Structure of data.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Construct</strong>
+            <ul>
+              <li>Store data physically on storage devices.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Manipulate</strong>
+            <ul>
+              <li>Insert data.</li>
+              <li>Delete data.</li>
+              <li>Update data.</li>
+              <li>Retrieve data.</li>
+            </ul>
+          </li>
+        </ol>
+
+        <hr />
+
+        <h2 id="why-not-os">6. Why Not Use Only the Operating System?</h2>
+        <p>Using the OS directly for databases causes problems:</p>
+        <ul>
+          <li>Increases OS size and complexity.</li>
+          <li>Slower access due to user mode → kernel mode switching.</li>
+          <li>OS provides unnecessary services for database access.</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Core idea:</span> Databases require fast access with minimal overhead.
+        </div>
+
+        <hr />
+
+        <h2 id="dbms">7. Database Management System (DBMS)</h2>
+        <p><strong>Definition</strong></p>
+        <ul>
+          <li>A <strong>DBMS</strong> is a set of programs used to:</li>
+          <ul>
+            <li>Define the database.</li>
+            <li>Construct the database.</li>
+            <li>Manipulate the database.</li>
+          </ul>
+        </ul>
+        <p><strong>Note:</strong> DBMS is software, not data.</p>
+
+        <p><strong>Simple Analogy</strong></p>
+        <ul>
+          <li><strong>Database</strong> → Book.</li>
+          <li><strong>DBMS</strong> → Pen.</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="dbs">8. Database System (DBS)</h2>
+        <p><strong>Definition</strong></p>
+        <ul>
+          <li>A <strong>Database System (DBS)</strong> is: <strong>Database + DBMS</strong>.</li>
+        </ul>
+
+        <p><strong>Meaning</strong></p>
+        <ul>
+          <li><strong>Database</strong> → Collection of related data.</li>
+          <li><strong>DBMS</strong> → Programs to manage the data.</li>
+          <li>Together they form a <strong>Database System</strong>.</li>
+        </ul>
+      </main>
+
+      <!-- Right side outline -->
+      <aside class="side-card">
+        <div class="side-title">Quick Outline</div>
+
+        <div class="side-section">
+          <span>Basics</span>
+          <ul>
+            <li><a href="#data">1. Data</a></li>
+            <li><a href="#database">2. Database</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Types</span>
+          <ul>
+            <li><a href="#types">3. Types of Databases</a></li>
+            <li><a href="#traditional">• Traditional</a></li>
+            <li><a href="#multimedia">• Multimedia</a></li>
+            <li><a href="#gis">• GIS</a></li>
+            <li><a href="#realtime">• Real‑Time</a></li>
+            <li><a href="#warehouse">• Data Warehouse</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Systems</span>
+          <ul>
+            <li><a href="#manual-vs-computerized">4. Manual vs Computerized</a></li>
+            <li><a href="#need-db-software">5. Need for DB Software</a></li>
+            <li><a href="#why-not-os">6. OS vs DB</a></li>
+            <li><a href="#dbms">7. DBMS</a></li>
+            <li><a href="#dbs">8. DBS</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Database Modeling & Design Levels</title>
+
+  <!-- GitHub-like fonts and base look -->
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.15);
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --code-bg: #1b1f23;
+      --tag-bg: #21262d;
+      --success: #238636;
+      --success-soft: rgba(35, 134, 54, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: radial-gradient(circle at top, #161b22 0, #010409 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px 40px;
+    }
+
+    /* Top bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-bar .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .top-bar .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Hero header */
+    .hero {
+      background: linear-gradient(
+          120deg,
+          rgba(88, 166, 255, 0.08),
+          transparent 50%
+        ),
+        var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 20px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-main {
+      max-width: 70%;
+    }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      text-align: right;
+      gap: 6px;
+      min-width: 150px;
+    }
+
+    .hero-badge-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .hero-badge-main {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, var(--success) 0, #161b22 55%);
+      border: 1px solid #2ea043;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c9ffdd;
+      box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2);
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero {
+        flex-direction: column;
+      }
+      .hero-main {
+        max-width: 100%;
+      }
+      .hero-badge {
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+
+    /* Main content card */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    p {
+      margin: 4px 0 6px;
+      font-size: 14px;
+    }
+
+    ul,
+    ol {
+      margin: 4px 0 8px 18px;
+      padding-left: 0;
+      font-size: 14px;
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    strong {
+      color: #e6edf3;
+    }
+
+    .key-idea {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      font-size: 13px;
+    }
+
+    .key-idea span {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .analogy {
+      background: rgba(35, 134, 54, 0.1);
+      border-left: 3px solid var(--success);
+      padding: 12px 16px;
+      margin: 8px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .analogy strong {
+      color: var(--success);
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: var(--tag-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    hr {
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      margin: 10px 0;
+    }
+
+    .mini-label {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .gate-tag {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #1f2937;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Right-side outline */
+    .side-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 80px);
+      overflow: auto;
+    }
+
+    .side-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .side-section {
+      margin-bottom: 8px;
+    }
+
+    .side-section span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .side-section ul {
+      margin: 4px 0 0 14px;
+      list-style-type: disc;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="title">
+        <span>📐 DBMS Design</span>
+        <span class="pill">Unit 1 • Modeling</span>
+      </div>
+      <div>GitHub‑style HTML</div>
+    </div>
+
+    <!-- Hero header -->
+    <header class="hero">
+      <div class="hero-main">
+        <h1>Data Modeling & Design Levels</h1>
+        <p>Three levels of database design: Conceptual → Logical → Physical. Real-world analogy with house construction.</p>
+        <div class="hero-tags">
+          <span class="tag">ER Model</span>
+          <span class="tag">Conceptual</span>
+          <span class="tag">Logical</span>
+          <span class="tag">Physical</span>
+          <span class="tag">GATE</span>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div>
+          <div class="hero-badge-label">Level</div>
+          <div class="hero-badge-main">Core • Semester 1</div>
+        </div>
+        <div class="hero-badge-sub">
+          <span class="gate-tag">GATE Syllabus</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Main content -->
+      <main class="card">
+        <h2 id="need-modeling">1. Need for Modeling</h2>
+        <p>Before building any system, engineers first create models.</p>
+
+        <div class="analogy">
+          <strong>Real-World Analogy: House Construction</strong>
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <strong>Blueprints/Charts</strong> (top view, side view, front view)<br>
+              <span style="color: var(--muted); font-size: 13px;">Used by engineers • Technical for common people</span>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <strong>Miniature House Model</strong><br>
+              <span style="color: var(--muted); font-size: 13px;">Easy for non-technical users • Shows final look</span>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <strong>Actual House Construction</strong><br>
+              <span style="color: var(--muted); font-size: 13px;">Final implementation</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-idea">
+          <span>Key:</span> Three levels of modeling are involved.
+        </div>
+
+        <hr />
+
+        <h2 id="levels-modeling">2. Levels of Data Modeling in Databases</h2>
+        <p>Similar to house construction, database design uses three levels:</p>
+        <ul>
+          <li><strong>Conceptual (High-Level)</strong> Model</li>
+          <li><strong>Representational (Logical)</strong> Model</li>
+          <li><strong>Physical (Low-Level)</strong> Model</li>
+        </ul>
+
+        <hr />
+
+        <h2 id="conceptual">3. Conceptual Model (High-Level Model)</h2>
+        <p><strong>Purpose</strong></p>
+        <ul>
+          <li>Used to explain database design to <strong>non-technical users</strong>.</li>
+          <li>Focuses on <strong>what</strong> data is stored, not <strong>how</strong> it is stored.</li>
+        </ul>
+
+        <p><strong>Example Scenario</strong></p>
+        <ul>
+          <li>Database designer discusses requirements with:</li>
+          <ul>
+            <li><span class="mini-label">School principal</span></li>
+            <li><span class="mini-label">Manager</span></li>
+            <li><span class="mini-label">Client (no DBMS knowledge)</span></li>
+          </ul>
+        </ul>
+
+        <div class="key-idea">
+          <span>Important:</span> No technical terms like SQL, tables, records are used.
+        </div>
+
+        <p><strong>Conceptual Modeling Technique</strong></p>
+        <p>The most popular conceptual model is:</p>
+        <ul>
+          <li><strong>Entity–Relationship (ER) Model</strong></li>
+        </ul>
+
+        <p><strong>Components</strong></p>
+        <ul>
+          <li><strong>Entities</strong> – Real-world objects<br>
+            <span style="color: var(--muted);">Example: Student, Course</span>
+          </li>
+          <li><strong>Attributes</strong> – Properties of entities<br>
+            <span style="color: var(--muted);">Student → Name, Roll No, Age</span>
+          </li>
+          <li><strong>Relationships</strong> – Association between entities<br>
+            <span style="color: var(--muted);">Student attends Course</span>
+          </li>
+        </ul>
+
+        <p><strong>Benefits:</strong> ER diagrams make database ideas easy to visualize and understand.</p>
+        <span class="gate-tag">✔️ ER Model is included in GATE syllabus</span>
+
+        <hr />
+
+        <h2 id="representational">4. Representational Model (Logical Model)</h2>
+        <p><strong>Purpose</strong></p>
+        <ul>
+          <li>Used by <strong>database designers and programmers</strong>.</li>
+          <li>Shows how data is <strong>logically organized</strong>.</li>
+        </ul>
+
+        <p><strong>Key Characteristics</strong></p>
+        <ul>
+          <li>Uses <strong>tables (relations)</strong>.</li>
+          <li><strong>Rows</strong> → Records.</li>
+          <li><strong>Columns</strong> → Attributes.</li>
+        </ul>
+
+        <p><strong>Name of the Model:</strong> <strong>Relational Model</strong></p>
+
+        <div class="key-idea">
+          <span>Key:</span> Bridges the gap between conceptual design and physical storage.
+        </div>
+
+        <hr />
+
+        <h2 id="physical">5. Physical Model (Low-Level Model)</h2>
+        <p><strong>Purpose</strong></p>
+        <ul>
+          <li>Describes how data is actually stored in <strong>memory or disk</strong>.</li>
+          <li>Concerned with <strong>efficiency and storage details</strong>.</li>
+        </ul>
+
+        <p><strong>Key Details Covered</strong></p>
+        <ul>
+          <li>Record structure.</li>
+          <li>Data types.</li>
+          <li>Byte-level storage.</li>
+          <li>How records are accessed.</li>
+        </ul>
+
+        <p><strong>Example</strong></p>
+        <ul>
+          <li>Table is <strong>not</strong> stored as an image.</li>
+          <li>Data is stored as a <strong>sequence of bytes</strong>.</li>
+          <li>To access the 3rd record, system must skip bytes of previous records.</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Key:</span> Focuses on storage and access mechanisms.
+        </div>
+
+        <hr />
+
+        <h2 id="order-design">6. Order of Database Design</h2>
+        <p>Database design proceeds in this <strong>sequential order</strong>:</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <strong>Conceptual Modeling</strong><br>
+            <span style="color: var(--muted);">ER diagrams</span>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <strong>Logical Modeling</strong><br>
+            <span style="color: var(--muted);">Relational tables</span>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <strong>Physical Modeling</strong><br>
+            <span style="color: var(--muted);">Storage and access methods</span>
+          </div>
+        </div>
+
+        <div class="key-idea">
+          <span>Final:</span> When all three levels are completed, database design is finished.
+        </div>
+      </main>
+
+      <!-- Right side outline -->
+      <aside class="side-card">
+        <div class="side-title">Design Flow</div>
+
+        <div class="side-section">
+          <span>Why Model?</span>
+          <ul>
+            <li><a href="#need-modeling">1. Need for Modeling</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Three Levels</span>
+          <ul>
+            <li><a href="#levels-modeling">2. Levels Overview</a></li>
+            <li><a href="#conceptual">3. Conceptual (ER)</a></li>
+            <li><a href="#representational">4. Logical (Relational)</a></li>
+            <li><a href="#physical">5. Physical</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Process</span>
+          <ul>
+            <li><a href="#order-design">6. Design Order</a></li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+          <div style="font-size: 11px; color: var(--muted); text-align: center;">
+            <strong>ER → Relational → Storage</strong>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ER Model – Conceptual Database Design</title>
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.15);
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --code-bg: #1b1f23;
+      --tag-bg: #21262d;
+      --success: #238636;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: radial-gradient(circle at top, #161b22 0, #010409 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px 40px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-bar .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .top-bar .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero {
+      background: linear-gradient(
+          120deg,
+          rgba(88, 166, 255, 0.08),
+          transparent 50%
+        ),
+        var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 20px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-main { max-width: 70%; }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      text-align: right;
+      gap: 6px;
+      min-width: 150px;
+    }
+
+    .hero-badge-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .hero-badge-main {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, var(--success) 0, #161b22 55%);
+      border: 1px solid #2ea043;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c9ffdd;
+      box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2);
+    }
+
+    .hero-badge-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .gate-tag {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #1f2937;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .hero { flex-direction: column; }
+      .hero-main { max-width: 100%; }
+      .hero-badge { align-items: flex-start; text-align: left; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    p { margin: 4px 0 6px; font-size: 14px; }
+
+    ul, ol {
+      margin: 4px 0 8px 18px;
+      padding-left: 0;
+      font-size: 14px;
+    }
+
+    li { margin-bottom: 3px; }
+
+    strong { color: #e6edf3; }
+
+    hr {
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      margin: 10px 0;
+    }
+
+    .key-idea {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      font-size: 13px;
+    }
+
+    .key-idea span {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .mini-label {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .pill-box {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .compare-card {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(22, 27, 34, 0.9);
+      font-size: 13px;
+    }
+
+    .compare-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0;
+      align-items: center;
+    }
+
+    .flow-item {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .arrow {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .side-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 80px);
+      overflow: auto;
+    }
+
+    .side-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .side-section { margin-bottom: 8px; }
+
+    .side-section span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .side-section ul {
+      margin: 4px 0 0 14px;
+      list-style-type: disc;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="title">
+        <span>🧩 ER Modeling</span>
+        <span class="pill">Conceptual Design</span>
+      </div>
+      <div>RVR • GATE‑oriented</div>
+    </div>
+
+    <!-- Hero header -->
+    <header class="hero">
+      <div class="hero-main">
+        <h1>ER Model – Conceptual Database Design</h1>
+        <p>Clean notes on Entity–Relationship modeling for high-level database design and GATE preparation.</p>
+        <div class="hero-tags">
+          <span class="tag">ER Model</span>
+          <span class="tag">Conceptual</span>
+          <span class="tag">Entities</span>
+          <span class="tag">Attributes</span>
+          <span class="tag">Relationships</span>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div>
+          <div class="hero-badge-label">Focus</div>
+          <div class="hero-badge-main">Conceptual Design • ER</div>
+        </div>
+        <div class="hero-badge-sub">
+          <span class="gate-tag">GATE Important</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Main content -->
+      <main class="card">
+        <h2 id="analogy">1. ER Model and Software Design Analogy</h2>
+        <p>In <strong>software design</strong>, UML diagrams (class diagrams, etc.) are used to represent structure before coding.</p>
+        <p>In <strong>database design</strong>, ER diagrams play a similar role at the conceptual level.</p>
+        <div class="key-idea">
+          <span>Key:</span> ER diagrams graphically represent database design before implementation.
+        </div>
+
+        <hr />
+
+        <h2 id="purpose">2. Purpose of ER Diagrams</h2>
+        <p>ER diagrams are used to:</p>
+        <ul>
+          <li>Capture user requirements expressed in words.</li>
+          <li>Convert textual requirements into pictorial form.</li>
+        </ul>
+        <p>They improve communication between:</p>
+        <ul>
+          <li>Database designer (technical).</li>
+          <li>End users (non‑technical).</li>
+        </ul>
+        <p>Users describe what they want in natural language; the designer converts this into ER diagrams.</p>
+
+        <hr />
+
+        <h2 id="components">3. Core Components of ER Model</h2>
+        <p>The ER model consists of three main components:</p>
+        <div class="two-col">
+          <div class="pill-box"><strong>Entity</strong> – Real‑world object.</div>
+          <div class="pill-box"><strong>Attribute</strong> – Property of an entity.</div>
+          <div class="pill-box"><strong>Relationship</strong> – Association among entities.</div>
+        </div>
+
+        <hr />
+
+        <h2 id="entity">4. Entity</h2>
+        <p><strong>Definition:</strong> An <strong>Entity</strong> is a real‑world object that can be uniquely identified and stored in a database.</p>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Person</li>
+          <li>Student</li>
+          <li>Employee</li>
+          <li>Car</li>
+          <li>Department</li>
+        </ul>
+        <div class="key-idea">
+          <span>Note:</span> Any object we want to record information about becomes an entity.
+        </div>
+
+        <hr />
+
+        <h2 id="attributes">5. Attributes</h2>
+        <p><strong>Definition:</strong> Attributes are the properties used to describe an entity.</p>
+        <p>If <strong>Person</strong> is an entity, its attributes may include:</p>
+        <ul>
+          <li>Name</li>
+          <li>Age</li>
+          <li>Address</li>
+          <li>Phone number</li>
+        </ul>
+        <div class="key-idea">
+          <span>Key:</span> Attributes provide detailed description of entities.
+        </div>
+
+        <hr />
+
+        <h2 id="relationship">6. Relationship</h2>
+        <p><strong>Definition:</strong> A <strong>Relationship</strong> represents an association among entities.</p>
+        <p>Relationships are usually expressed using <strong>verbs</strong>.</p>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Employee <strong>works for</strong> Department</li>
+          <li>Student <strong>attends</strong> Course</li>
+          <li>Person <strong>owns</strong> Car</li>
+        </ul>
+        <div class="key-idea">
+          <span>Note:</span> Relationships describe how entities are connected.
+        </div>
+
+        <hr />
+
+        <h2 id="entity-type-instance">7. Entity Type vs Entity Instance</h2>
+        <div class="compare">
+          <div class="compare-card">
+            <div class="compare-title">Entity Type</div>
+            <ul>
+              <li>Name of the entity.</li>
+              <li>Example: <span class="mini-label">STUDENT</span></li>
+              <li>Also called <strong>Intension</strong>.</li>
+            </ul>
+          </div>
+          <div class="compare-card">
+            <div class="compare-title">Entity Instance</div>
+            <ul>
+              <li>Actual data records.</li>
+              <li>Example: (RollNo = 101, Name = Ravi).</li>
+              <li>Also called <strong>Extension</strong>.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="key-idea">
+          <span>Important:</span> In ER diagrams, we usually show <strong>entity types</strong>, not all instances.
+        </div>
+
+        <hr />
+
+        <h2 id="rel-type-instance">8. Relationship Type vs Relationship Instance</h2>
+        <p><strong>Relationship Type</strong> → Name of the relationship.</p>
+        <p>Example: <span class="mini-label">WORKS_FOR</span></p>
+        <p><strong>Relationship Instance</strong> → Actual association.</p>
+        <p>Example: Ravi works for CSE Dept.</p>
+        <div class="key-idea">
+          <span>Idea:</span> Same concept as entity type vs instance applies to relationships.
+        </div>
+
+        <hr />
+
+        <h2 id="abstract">9. Why ER Diagrams Are Abstract</h2>
+        <ul>
+          <li>ER diagrams do <strong>not</strong> show all data values.</li>
+          <li>They show only entity types, attributes, and relationships.</li>
+          <li>This keeps the diagram simple and understandable.</li>
+        </ul>
+        <div class="key-idea">
+          <span>Goal:</span> Clarity, not completeness of every data value.
+        </div>
+
+        <hr />
+
+        <h2 id="iterative">10. ER Modeling as an Iterative Process</h2>
+        <p>ER modeling is a <strong>cyclic and interactive</strong> process:</p>
+        <ol>
+          <li>Collect requirements from users.</li>
+          <li>Draw initial ER diagram.</li>
+          <li>Show diagram to users.</li>
+          <li>Refine based on feedback.</li>
+          <li>Repeat until requirements are clear.</li>
+        </ol>
+
+        <hr />
+
+        <h2 id="flow">11. From ER Model to Implementation</h2>
+        <p>Database design flow:</p>
+        <div class="flow">
+          <div class="flow-item">
+            <span>Conceptual Design</span>
+            <span class="mini-label">ER diagrams</span>
+          </div>
+          <span class="arrow">➜</span>
+          <div class="flow-item">
+            <span>Logical Design</span>
+            <span class="mini-label">Relational tables</span>
+          </div>
+          <span class="arrow">➜</span>
+          <div class="flow-item">
+            <span>Physical Design</span>
+            <span class="mini-label">Disk storage</span>
+          </div>
+        </div>
+        <div class="key-idea">
+          <span>Final:</span> Once the ER model is correct, conversion to tables becomes straightforward.
+        </div>
+      </main>
+
+      <!-- Right side outline -->
+      <aside class="side-card">
+        <div class="side-title">Quick Outline</div>
+
+        <div class="side-section">
+          <span>Basics</span>
+          <ul>
+            <li><a href="#analogy">1. ER vs UML</a></li>
+            <li><a href="#purpose">2. Purpose</a></li>
+            <li><a href="#components">3. Components</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Core Concepts</span>
+          <ul>
+            <li><a href="#entity">4. Entity</a></li>
+            <li><a href="#attributes">5. Attributes</a></li>
+            <li><a href="#relationship">6. Relationship</a></li>
+            <li><a href="#entity-type-instance">7. Entity Type vs Instance</a></li>
+            <li><a href="#rel-type-instance">8. Relationship Type vs Instance</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Design View</span>
+          <ul>
+            <li><a href="#abstract">9. Abstract Nature</a></li>
+            <li><a href="#iterative">10. Iterative Modeling</a></li>
+            <li><a href="#flow">11. Design Flow</a></li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--muted);">
+          <strong>Entity • Attribute • Relationship</strong><br />
+          Foundation of conceptual DB design
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Attributes in ER Model – GATE Notes</title>
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.15);
+      --text: #c9d1d9;
+      --muted: #8b949e;
+      --code-bg: #1b1f23;
+      --tag-bg: #21262d;
+      --success: #238636;
+      --warn: #f59e0b;
+      --danger: #f97373;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: radial-gradient(circle at top, #161b22 0, #010409 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px 40px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-bar .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .top-bar .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero {
+      background: linear-gradient(
+          120deg,
+          rgba(88, 166, 255, 0.08),
+          transparent 50%
+        ),
+        var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 20px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-main { max-width: 70%; }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      text-align: right;
+      gap: 6px;
+      min-width: 150px;
+    }
+
+    .hero-badge-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .hero-badge-main {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, var(--success) 0, #161b22 55%);
+      border: 1px solid #2ea043;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c9ffdd;
+      box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2);
+    }
+
+    .hero-badge-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .gate-tag {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      color: #1f2937;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(230px, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .hero { flex-direction: column; }
+      .hero-main { max-width: 100%; }
+      .hero-badge { align-items: flex-start; text-align: left; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.8);
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    p { margin: 4px 0 6px; font-size: 14px; }
+
+    ul, ol {
+      margin: 4px 0 8px 18px;
+      padding-left: 0;
+      font-size: 14px;
+    }
+
+    li { margin-bottom: 3px; }
+
+    strong { color: #e6edf3; }
+
+    hr {
+      border: none;
+      border-bottom: 1px dashed var(--border);
+      margin: 10px 0;
+    }
+
+    .key-idea {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      font-size: 13px;
+    }
+
+    .key-idea span {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .mini-label {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .pill-box {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .exam-box {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      background: rgba(245, 158, 11, 0.06);
+      font-size: 13px;
+    }
+
+    .exam-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--warn);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .table-wrap {
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #111827;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .side-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 80px);
+      overflow: auto;
+    }
+
+    .side-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .side-section { margin-bottom: 8px; }
+
+    .side-section span {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .side-section ul {
+      margin: 4px 0 0 14px;
+      list-style-type: disc;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="title">
+        <span>🎯 ER Attributes</span>
+        <span class="pill">GATE‑Oriented</span>
+      </div>
+      <div>Conceptual DB Design</div>
+    </div>
+
+    <!-- Hero header -->
+    <header class="hero">
+      <div class="hero-main">
+        <h1>Attributes in ER Model</h1>
+        <p>Clean classification of attribute types in ER model, with GATE-focused examples and exam patterns.</p>
+        <div class="hero-tags">
+          <span class="tag">Simple</span>
+          <span class="tag">Composite</span>
+          <span class="tag">Multi‑Valued</span>
+          <span class="tag">Derived</span>
+          <span class="tag">Complex</span>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div>
+          <div class="hero-badge-label">Topic</div>
+          <div class="hero-badge-main">ER Attribute Types</div>
+        </div>
+        <div class="hero-badge-sub">
+          <span class="gate-tag">High Weightage</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Main content -->
+      <main class="card">
+        <h2 id="intro">1. What are Attributes?</h2>
+        <p><strong>Attributes</strong> are properties used to describe <strong>entities</strong> or <strong>relationships</strong>.</p>
+        <p>The more attributes an entity has, the better it is described, which improves data clarity and query usefulness.</p>
+        <p><strong>Example (Entity: Person)</strong></p>
+        <ul>
+          <li>Name</li>
+          <li>Age</li>
+          <li>Address</li>
+          <li>Phone Number</li>
+        </ul>
+        <p>Attributes help answer queries like <span class="mini-label">students by city</span> or <span class="mini-label">employees older than 30</span>.</p>
+
+        <hr />
+
+        <h2 id="classification">2. Classification of Attributes</h2>
+        <p>Attributes are classified in multiple <strong>independent</strong> ways. These classifications are <strong>not</strong> mutually exclusive.</p>
+        <p>One attribute can belong to multiple categories at the same time.</p>
+
+        <hr />
+
+        <h2 id="simple-vs-composite">3. Simple vs Composite Attributes</h2>
+
+        <h3>3.1 Simple Attribute</h3>
+        <ul>
+          <li>Cannot be divided further.</li>
+          <li>Atomic in nature.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Age</li>
+          <li>Salary</li>
+          <li>First Name</li>
+        </ul>
+
+        <h3>3.2 Composite Attribute</h3>
+        <ul>
+          <li>Can be divided into sub‑parts.</li>
+          <li>Made up of multiple simple attributes.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Name → First Name, Middle Name, Last Name</li>
+          <li>Address → Street, City, State, PIN</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Note:</span> <strong>Name</strong> is a composite attribute, while <strong>First Name</strong> is a simple attribute.
+        </div>
+
+        <hr />
+
+        <h2 id="single-vs-multi">4. Single‑Valued vs Multi‑Valued Attributes</h2>
+
+        <h3>4.1 Single‑Valued Attribute</h3>
+        <ul>
+          <li>Has only <strong>one</strong> value at any time.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Age</li>
+          <li>Date of Birth</li>
+        </ul>
+
+        <h3>4.2 Multi‑Valued Attribute</h3>
+        <ul>
+          <li>Can have <strong>multiple</strong> values at the same time.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Phone Numbers (mobile, landline)</li>
+          <li>Addresses (home, office)</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Important:</span> <strong>Age</strong> can never be multi‑valued; <strong>phone number</strong> can be.
+        </div>
+
+        <hr />
+
+        <h2 id="stored-vs-derived">5. Stored vs Derived Attributes</h2>
+
+        <h3>5.1 Stored Attribute</h3>
+        <ul>
+          <li>Value is stored directly in the database.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Date of Birth</li>
+          <li>Salary</li>
+        </ul>
+
+        <h3>5.2 Derived Attribute</h3>
+        <ul>
+          <li>Value is computed from other attributes.</li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Age (derived from Date of Birth)</li>
+          <li>Total Marks (derived from subject‑wise marks)</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Note:</span> Derived attributes are usually <strong>not stored</strong> to avoid redundancy.
+        </div>
+
+        <hr />
+
+        <h2 id="null">6. Null Values (Important Concept)</h2>
+        <p>A <strong>NULL</strong> value is used when:</p>
+        <ul>
+          <li>Value does <strong>not exist</strong> (e.g., phone number not available).</li>
+          <li>Value is <strong>not applicable</strong> (e.g., no middle name).</li>
+        </ul>
+        <div class="key-idea">
+          <span>Very Important:</span> <strong>NULL ≠ 0 ≠ blank</strong>.
+        </div>
+
+        <hr />
+
+        <h2 id="complex">7. Complex Attribute</h2>
+        <p>A <strong>Complex Attribute</strong> is:</p>
+        <ul>
+          <li><strong>Composite</strong> and</li>
+          <li><strong>Multi‑Valued</strong></li>
+        </ul>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Address (multiple addresses, each having street, city, PIN)</li>
+          <li>Phone Numbers (multiple numbers, each with STD code + number)</li>
+        </ul>
+
+        <div class="key-idea">
+          <span>Formula:</span> <strong>Complex = Composite + Multi‑Valued</strong>.
+        </div>
+
+        <hr />
+
+        <h2 id="multi-category">8. Important Exam Insight</h2>
+        <p>An attribute can belong to <strong>multiple categories simultaneously</strong>:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>Type Combination</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>Composite + Single‑Valued</td>
+              </tr>
+              <tr>
+                <td>Age</td>
+                <td>Simple + Single‑Valued + Derived</td>
+              </tr>
+              <tr>
+                <td>Address</td>
+                <td>Composite + Multi‑Valued (Complex)</td>
+              </tr>
+              <tr>
+                <td>Date of Birth</td>
+                <td>Simple + Single‑Valued + Stored</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="exam-box">
+          <div class="exam-title">GATE / EXAM TIP</div>
+          <p>Always check:</p>
+          <ul>
+            <li>Can it be split? → Composite vs Simple.</li>
+            <li>Can it have many values? → Multi‑Valued vs Single‑Valued.</li>
+            <li>Is it computed? → Derived vs Stored.</li>
+          </ul>
+        </div>
+
+        <hr />
+
+        <h2 id="pattern">9. GATE / Exam‑Type Question Pattern</h2>
+        <p>Questions usually give a verbal description and ask: <strong>"What type of attribute should be used?"</strong></p>
+        <p><strong>Examples:</strong></p>
+        <ul>
+          <li>Employee can reside in two cities → <strong>Address = Multi‑Valued</strong>.</li>
+          <li>Address has street, city, PIN → <strong>Address = Composite</strong>.</li>
+          <li>Employee has two addresses with full details → <strong>Address = Complex</strong>.</li>
+          <li>Employee has mobile and landline → <strong>Phone Number = Multi‑Valued</strong>.</li>
+          <li>Name has first and last name → <strong>Name = Composite</strong>.</li>
+        </ul>
+
+        <div class="exam-box">
+          <div class="exam-title">FAST RECALL</div>
+          <p>
+            <span class="mini-label">Complex</span> = composite structure + multiple values per entity.  
+            <br />
+            Think: "many detailed entries" → Complex attribute.
+          </p>
+        </div>
+      </main>
+
+      <!-- Right side outline -->
+      <aside class="side-card">
+        <div class="side-title">Quick Outline</div>
+
+        <div class="side-section">
+          <span>Basics</span>
+          <ul>
+            <li><a href="#intro">1. What are Attributes?</a></li>
+            <li><a href="#classification">2. Classification</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Types</span>
+          <ul>
+            <li><a href="#simple-vs-composite">3. Simple vs Composite</a></li>
+            <li><a href="#single-vs-multi">4. Single vs Multi‑Valued</a></li>
+            <li><a href="#stored-vs-derived">5. Stored vs Derived</a></li>
+            <li><a href="#null">6. Null Values</a></li>
+            <li><a href="#complex">7. Complex Attribute</a></li>
+          </ul>
+        </div>
+
+        <div class="side-section">
+          <span>Exam View</span>
+          <ul>
+            <li><a href="#multi-category">8. Multi‑Category Insight</a></li>
+            <li><a href="#pattern">9. Question Pattern</a></li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--muted);">
+          <strong>Simple • Composite • Multi‑Valued • Derived</strong><br />
+          Master these for ER attribute questions.
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
